@@ -69,17 +69,29 @@ def lambda_handler(event, context):
                     "role": "assistant", 
                     "content": [{"text": msg["content"]}]
                 })
-        
-        # invoke_model用のリクエストペイロード
+        ## HOMEWORK 
+
+        prompt = "\n".join([msg["content"][0]["text"] for msg in bedrock_messages if msg["role"] == "user"])
+
+        # FastAPI に送る形式に修正
         request_payload = {
-            "messages": bedrock_messages,
-            "inferenceConfig": {
-                "maxTokens": 512,
-                "stopSequences": [],
-                "temperature": 0.7,
-                "topP": 0.9
-            }
+            "prompt": prompt,
+            "max_new_tokens": 512,
+            "do_sample": True,
+            "temperature": 0.7,
+            "top_p": 0.9
         }
+
+        # # invoke_model用のリクエストペイロード
+        # request_payload = {
+        #     "messages": bedrock_messages,
+        #     "inferenceConfig": {
+        #         "maxTokens": 512,
+        #         "stopSequences": [],
+        #         "temperature": 0.7,
+        #         "topP": 0.9
+        #     }
+        # }
         
         print("Calling Bedrock invoke_model API with payload:", json.dumps(request_payload))
         
@@ -90,7 +102,7 @@ def lambda_handler(event, context):
         #     contentType="application/json"
         # )
 
-        ## HOMEWORK 
+
 
         TARGET_URL = "https://f071-34-143-163-82.ngrok-free.app/generate"
         req = urllib.request.Request(
