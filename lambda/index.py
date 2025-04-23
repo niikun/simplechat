@@ -93,7 +93,7 @@ def lambda_handler(event, context):
         ## HOMEWORK 
 
         TARGET_URL = "https://f071-34-143-163-82.ngrok-free.app/generate"
-        response = urllib.request.Request(
+        req = urllib.request.Request(
             url=TARGET_URL,
             data=json.dumps(request_payload).encode('utf-8'),
             headers={'Content-Type': 'application/json'},
@@ -105,13 +105,13 @@ def lambda_handler(event, context):
         # print("Bedrock response:", json.dumps(response_body, default=str))
 
         with urllib.request.urlopen(req) as res:
-            response_body_endoded = res.read().decode('utf-8')
-            response_body = json.loads(response_body_endoded)
-            print("FastAPI response:", json.dumps(response_body, default=str))
+            body_str = res.read().decode('utf-8')
+            response_body = json.loads(body_str)
+            print("FastAPI response:", json.dumps(response_body, ensure_ascii=False))
 
         ## HOMEWORK END
 
-        
+
         # 応答の検証
         if not response_body.get('output') or not response_body['output'].get('message') or not response_body['output']['message'].get('content'):
             raise Exception("No response content from the model")
